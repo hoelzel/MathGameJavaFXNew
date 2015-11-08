@@ -7,11 +7,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
 import de.lezleoh.mathgame.term.Number;
 import de.lezleoh.mathgame.term.Sum;
+import de.lezleoh.mathgame.term.TermInt;
 
 /**
  * @author hoel
@@ -20,7 +23,8 @@ import de.lezleoh.mathgame.term.Sum;
 public class SumTest {
 
 	/**
-	 * Test method for {@link de.lezleoh.mathgame.term.Sum#getHitPositions()}.
+	 * Test method for
+	 * {@link de.lezleoh.mathgame.term.Sum#getPossibleHitPositions()}.
 	 */
 	@Test
 	public final void testGetHitPositionsMonad() {
@@ -28,12 +32,13 @@ public class SumTest {
 		Number number = new Number(1);
 		Sum sum = new Sum();
 		sum.addOperand(number);
-		assertTrue(sum.getHitPositions().isEmpty());
+		assertTrue(sum.getPossibleHitPositions().isEmpty());
 
 	}
 
 	/**
-	 * Test method for {@link de.lezleoh.mathgame.term.Sum#getHitPositions()}.
+	 * Test method for
+	 * {@link de.lezleoh.mathgame.term.Sum#getPossibleHitPositions()}.
 	 */
 	@Test
 	public final void testGetHitPositionsSimpleSum() {
@@ -48,15 +53,16 @@ public class SumTest {
 		sum1.addOperand(summand12);
 		sum1.addOperand(summand13);
 
-		ArrayList<Integer> hitPositionsExpected = new ArrayList<Integer>();
+		Set<Integer> hitPositionsExpected = new HashSet<Integer>();
 		hitPositionsExpected.add(new Integer(3));
 		hitPositionsExpected.add(new Integer(8));
 
-		assertEquals(hitPositionsExpected, sum1.getHitPositions());
+		assertEquals(hitPositionsExpected, sum1.getPossibleHitPositions());
 	}
 
 	/**
-	 * Test method for {@link de.lezleoh.mathgame.term.Sum#getHitPositions()}.
+	 * Test method for
+	 * {@link de.lezleoh.mathgame.term.Sum#getPossibleHitPositions()}.
 	 */
 	@Test
 	public final void testGetHitPositionsStructuredSum() {
@@ -77,13 +83,13 @@ public class SumTest {
 		sum2.addOperand(summand21);
 		sum2.addOperand(summand22);
 
-		ArrayList<Integer> hitPositionsExpected = new ArrayList<Integer>();
+		Set<Integer> hitPositionsExpected = new HashSet<Integer>();
 
 		hitPositionsExpected.add(new Integer(3));
 		hitPositionsExpected.add(new Integer(8));
 		hitPositionsExpected.add(new Integer(13));
 		hitPositionsExpected.add(new Integer(18));
-		assertEquals(hitPositionsExpected, sum1.getHitPositions());
+		assertEquals(hitPositionsExpected, sum1.getPossibleHitPositions());
 
 	}
 
@@ -139,9 +145,9 @@ public class SumTest {
 		Number number = new Number(1);
 		Sum sum = new Sum();
 		sum.addOperand(number);
-		
+
 		sum.simplifyOneStep();
-		
+
 		assertEquals("1", sum.getString());
 	}
 
@@ -160,7 +166,7 @@ public class SumTest {
 		sum.addOperand(summand13);
 
 		sum.simplifyOneStep();
-		
+
 		assertEquals("36", sum.getString());
 	}
 
@@ -183,10 +189,33 @@ public class SumTest {
 		sum1.addOperand(summand13);
 		sum2.addOperand(summand21);
 		sum2.addOperand(summand22);
-		
+
 		sum1.simplifyOneStep();
-		
+
 		assertEquals("79", sum1.getString());
+	}
+
+	@Test
+	public final void testCopy() {
+		// term under test: 11 + 12 + 13
+		Number summand11 = new Number(11);
+		Number summand12 = new Number(12);
+		Number summand13 = new Number(13);
+		Sum sum = new Sum();
+		sum.addOperand(summand11);
+		sum.addOperand(summand12);
+		sum.addOperand(summand13);
+		TermInt copiedTerm = sum.copy();
+
+		Number summand11Expected = new Number(11);
+		Number summand12Expected = new Number(12);
+		Number summand13Expected = new Number(13);
+		Sum sumExpected = new Sum();
+		sumExpected.addOperand(summand11Expected);
+		sumExpected.addOperand(summand12Expected);
+		sumExpected.addOperand(summand13Expected);
+
+		assertEquals(sumExpected, copiedTerm);
 	}
 
 }

@@ -1,12 +1,14 @@
 package de.lezleoh.mathgame.term;
 
-import java.util.ArrayList;
+import java.util.Set;
 
 public interface TermInt {
-	ArrayList<Integer> getHitPositions();
+	Set<Integer> getPossibleHitPositions();
 	Integer getValue();
 	Integer getLength();
 	String getString();
 	TermInt simplifyOneStep();
 	TypeOfTerm getTypeOfTerm();
+	Boolean isNumber();
+	TermInt copy();
 }

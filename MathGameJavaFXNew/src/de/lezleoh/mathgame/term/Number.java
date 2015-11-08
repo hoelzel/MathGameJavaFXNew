@@ -1,6 +1,8 @@
 package de.lezleoh.mathgame.term;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Number implements TermInt {
 	private Integer value;
@@ -14,8 +16,8 @@ public class Number implements TermInt {
 	}
 
 	@Override
-	public ArrayList<Integer> getHitPositions() {
-		return new ArrayList<Integer>();
+	public Set<Integer> getPossibleHitPositions() {
+		return new HashSet<Integer>();
 	}
 
 	@Override
@@ -45,5 +47,15 @@ public class Number implements TermInt {
 	@Override
 	public TermInt simplifyOneStep() {
 		return this;
+	}
+
+	@Override
+	public Boolean isNumber() {
+		return true;
+	}
+
+	@Override
+	public TermInt copy() {
+		return new Number(value);
 	}
 }

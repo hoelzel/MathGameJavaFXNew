@@ -10,5 +10,15 @@ public class Product extends TermWithMultipleOperands {
 	public TypeOfTerm getTypeOfTerm() {
 		return TypeOfTerm.PRODUCT;
 	}
+	
+	@Override
+	public TermInt copy() {
+		Product newTerm = new Product();
+		for (TermInt operand : operands) {
+			newTerm.addOperand(operand.copy());
+		}
+		return newTerm;
+	}
+	
 
 }

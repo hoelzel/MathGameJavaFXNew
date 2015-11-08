@@ -1,7 +1,12 @@
 package de.lezleoh.mathgame.view;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.sun.javafx.tk.FontLoader;
+import com.sun.javafx.tk.Toolkit;
+
+import de.lezleoh.mathgame.game.GameStateMachine;
 import de.lezleoh.mathgame.term.Number;
 import de.lezleoh.mathgame.term.Product;
 import de.lezleoh.mathgame.term.Sum;
@@ -10,96 +15,107 @@ import de.lezleoh.mathgame.view.util.Style;
 import de.lezleoh.mathgame.view.util.StyledCharacter;
 import de.lezleoh.mathgame.view.util.StyledText;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.stage.Stage;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
 
 public class MainApp extends Application {
+	// Model
+	int maxLineIndex = 0;
+	private Set<Integer> clickedPositions = new HashSet<Integer>();
+	double fontsize = 30;
+	Font font = Font.font("Monospaced", fontsize);
+	FontLoader fontLoader = Toolkit.getToolkit().getFontLoader();
 
+	double fontWidth = fontLoader.computeStringWidth("1", font);
+
+	Color hitColor = Color.RED;
+	Style hitStyle = new Style(font, hitColor);
+
+	Color normalColor = Color.BLACK;
+	Style normalStyle = new Style(font, normalColor);
+
+	// View
 	private Stage primaryStage;
+	private static TextFlow textFlow = new TextFlow();
+	private static Scene scene;
+
+	public static void main(String[] args) {
+		launch(args);
+	}
 
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Mathgame");
 		try {
 			BorderPane root = new BorderPane();
-			Scene scene = new Scene(root, 1000, 400);
+			scene = new Scene(root, 800, 800);
 			primaryStage.setScene(scene);
 			primaryStage.show();
 
 			TermInt term = getStructuredTerm();
-			Font font = new Font(30);
+			GameStateMachine gameStateMachine = new GameStateMachine(term);
 
-			Color hitColor = Color.RED;
-			Style hitStyle = new Style(font, hitColor);
+			StyledText<Style> styledTextList = new StyledText<Style>(gameStateMachine.getTerm().getString(),
+					normalStyle);
 
-			Color normalColor = Color.BLACK;
-			Style normalStyle = new Style(font, normalColor);
-			TextFlow textFlow = new TextFlow();
-			int j = 0;
-			while (j < 10) {
-				StyledText<Style> styledTextList = new StyledText<Style>(term.getString(), normalStyle);
-				for (int i : term.getHitPositions()) {
-					styledTextList.setStyle(i, i + 1, hitStyle);
-				}
-
-				for (int i = 0; i < styledTextList.getLength(); i++) {
-					StyledCharacter<Style> actStyledCharacter = styledTextList.getStyledCharacter(i);
-					Text actText = new Text();
-					actText.setText(actStyledCharacter.getString());
-					actText.setFont(actStyledCharacter.getStyle().getFont());
-					actText.setFill(actStyledCharacter.getStyle().getColor());
-					textFlow.getChildren().add(actText);
-				}
-				textFlow.getChildren().add(new Text("\n"));
-				term = term.simplifyOneStep();
-				j++;
+			for (int i = 0; i < styledTextList.getLength(); i++) {
+				StyledCharacter<Style> actStyledCharacter = styledTextList.getStyledCharacter(i);
+				Text actText = new Text();
+				actText.setText(actStyledCharacter.getString());
+				actText.setFont(actStyledCharacter.getStyle().getFont());
+				actText.setFill(actStyledCharacter.getStyle().getColor());
+				textFlow.getChildren().add(actText);
 			}
+			textFlow.getChildren().add(new Text(" \n"));
 
 			root.setCenter(textFlow);
-
-			// @formatter:off
-			/*
-			ArrayList<Integer> hitPositions = new ArrayList<>();
-			hitPositions.addAll(term.getHitPositions());
-			TextFlow textFlow = new TextFlow();
-			Integer oldHitPosition = new Integer(0);	
-			for (Integer hitPosition : hitPositions){
-				Text text1 = new Text(term.getString().substring(oldHitPosition, hitPosition));
-				text1.setFill(Color.BLACK);
-				text1.setFont(Font.font("Monospace", FontWeight.BOLD, 40));
-				textFlow.getChildren().add(text1);
-				Text text2 = new Text(term.getString().substring(hitPosition,hitPosition));
-				text2.setFill(Color.RED);
-				text2.setFont(Font.font("Monospace", FontWeight.BOLD, 40));
-				textFlow.getChildren().add(text2);
-				oldHitPosition = hitPosition;
-			}
-			Text text3 = new Text(term.getString().substring(oldHitPosition));
-			text3.setFill(Color.BLACK);
-			text3.setFont(Font.font("Monospace", FontWeight.BOLD, 40));
-			textFlow.getChildren().add(text3);
-			textFlow.setOnMouseClicked(mouseEvent -> System.out.println("entering at x: "+ mouseEvent.getX()));
-			*/
-			// @formatter:on
-
+			textFlow.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				public void handle(MouseEvent mouseEvent) {
+					System.out.print("Mousepressed at ");
+					System.out.print("x: " + mouseEvent.getX() + ", ");
+					System.out.print("y: " + mouseEvent.getY() + ", ");
+					Double indexAsDouble = mouseEvent.getX() / fontWidth;
+					Integer index = indexAsDouble.intValue();
+					System.out.println("CharacterIndex: " + index);
+					textFlow.getChildren().add(new Text("\n"));
+					gameStateMachine.switchState(index);
+					StyledText<Style> actStyledTextList = alternateStyledText(styledTextList, hitStyle,
+							gameStateMachine.getHitPositions());
+					appendToTextFlow(actStyledTextList);
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 	}
 
-	public static void main(String[] args) {
-		launch(args);
+	public void appendToTextFlow(StyledText<Style> styledText) {
+		for (int i = 0; i < styledText.getLength(); i++) {
+			StyledCharacter<Style> actStyledCharacter = styledText.getStyledCharacter(i);
+			Text actText = new Text();
+			actText.setText(actStyledCharacter.getString());
+			actText.setFont(actStyledCharacter.getStyle().getFont());
+			actText.setFill(actStyledCharacter.getStyle().getColor());
+			textFlow.getChildren().add(actText);
+		}
+	}
+
+	private StyledText<Style> alternateStyledText(StyledText<Style> styledText, Style style, Set<Integer> positions) {
+		for (Integer position : positions) {
+			styledText.setStyle(position, position + 1, style);
+		}
+		return styledText;
 	}
 
 	private TermInt getStructuredTerm() {
@@ -121,6 +137,6 @@ public class MainApp extends Application {
 		sum1.addOperand(product2);
 		sum1.addOperand(summand12);
 		return sum1;
-
 	}
+
 }

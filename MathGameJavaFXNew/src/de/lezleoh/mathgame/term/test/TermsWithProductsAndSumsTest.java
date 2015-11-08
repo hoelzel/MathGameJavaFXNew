@@ -3,6 +3,8 @@ package de.lezleoh.mathgame.term.test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -36,7 +38,6 @@ public class TermsWithProductsAndSumsTest {
 		sum1.addOperand(summand11);
 		sum1.addOperand(product2);
 		sum1.addOperand(summand12);
-		// System.out.println(sum1.getString());
 		assertEquals("11 + 21 * (31 + 32) + (-12)", sum1.getString());
 	}
 
@@ -50,12 +51,12 @@ public class TermsWithProductsAndSumsTest {
 		// index__________: 012345678901234567890123456
 		TermInt term = getStructuredTerm();
 
-		ArrayList<Integer> hitPositionsExpected = new ArrayList<Integer>();
+		Set<Integer> hitPositionsExpected = new HashSet<Integer>();
 
 		hitPositionsExpected.add(new Integer(14));
 		hitPositionsExpected.add(new Integer(20));
 
-		assertEquals(hitPositionsExpected, term.getHitPositions());
+		assertEquals(hitPositionsExpected, term.getPossibleHitPositions());
 	}
 
 	@Test
@@ -66,10 +67,6 @@ public class TermsWithProductsAndSumsTest {
 		term.simplifyOneStep();
 
 		String expected = "(-1) + 21 * 63";
-		System.out.println("testSimplifyOneStep1Time");
-		System.out.println("expected: " + expected);
-		System.out.println("actual: " + term.getString());
-		System.out.println();
 		assertEquals(expected, term.getString());
 	}
 
@@ -82,10 +79,6 @@ public class TermsWithProductsAndSumsTest {
 		term.simplifyOneStep();
 
 		String expected = "(-1) + 1323";
-		System.out.println("testSimplifyOneStep2Times");
-		System.out.println("expected: " + expected);
-		System.out.println("actual: " + term.getString());
-		System.out.println();
 		assertEquals(expected, term.getString());
 	}
 	@Test
@@ -104,10 +97,6 @@ public class TermsWithProductsAndSumsTest {
 		outerProduct.simplifyOneStep();
 		
 		String expected ="1716";
-		System.out.println("testSimplifyOneStepProduct");
-		System.out.println("expected: " + expected);
-		System.out.println("actual: " + outerProduct.getString());
-		System.out.println();
 		assertEquals(expected, outerProduct.getString());
 	}
 

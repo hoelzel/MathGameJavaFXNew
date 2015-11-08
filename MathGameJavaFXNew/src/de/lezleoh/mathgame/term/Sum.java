@@ -10,5 +10,13 @@ public class Sum extends TermWithMultipleOperands {
 	public TypeOfTerm getTypeOfTerm() {
 		return TypeOfTerm.SUM;
 	}
-
+	@Override
+	public TermInt copy() {
+		Sum newTerm = new Sum();
+		for (TermInt operand : operands) {
+			newTerm.addOperand(operand.copy());
+		}
+		return newTerm;
+	}
+	
 }

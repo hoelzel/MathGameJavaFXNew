@@ -1,10 +1,12 @@
 package de.lezleoh.mathgame.term;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public abstract class TermWithMultipleOperands implements TermInt {
-	private ArrayList<TermInt> operands;
+	protected ArrayList<TermInt> operands;
 	private IntOperation operation;
 	private IntOperationSign sign;
 	private Integer neutralElement;
@@ -22,15 +24,15 @@ public abstract class TermWithMultipleOperands implements TermInt {
 	}
 
 	@Override
-	public ArrayList<Integer> getHitPositions() {
-		ArrayList<Integer> hitPositions = new ArrayList<Integer>();
+	public Set<Integer> getPossibleHitPositions() {
+		Set<Integer> hitPositions = new HashSet<Integer>();
 		int actualIndex = 0;
 		Iterator<TermInt> iterator = operands.iterator();
 
 		while (iterator.hasNext()) {
 			TermInt operand = iterator.next();
 			String shiftString = "";
-			int shift=0;
+			int shift = 0;
 			if (operand.getTypeOfTerm().isNumber() || this.hasEqualOperatorLevel(operand)) {
 				if (actualIndex > 0) {
 					shiftString = " " + sign.getSign();
@@ -39,12 +41,12 @@ public abstract class TermWithMultipleOperands implements TermInt {
 				}
 			}
 			ArrayList<Integer> relativeHitPositions = new ArrayList<Integer>();
-			relativeHitPositions.addAll(operand.getHitPositions());
-			
-			if(this.hasGreaterOperatorLevel(operand)){
+			relativeHitPositions.addAll(operand.getPossibleHitPositions());
+
+			if (this.hasGreaterOperatorLevel(operand)) {
 				shiftString = "(";
-				shift = shiftString.length();	
-			} else{
+				shift = shiftString.length();
+			} else {
 				shift = 0;
 			}
 			hitPositions.addAll(shiftToAbsoluteHitPositions(actualIndex + shift, relativeHitPositions));
@@ -108,8 +110,9 @@ public abstract class TermWithMultipleOperands implements TermInt {
 		}
 		return resultString;
 	}
+
 	@Override
-	public String toString(){
+	public String toString() {
 		return getString();
 	}
 
@@ -123,19 +126,23 @@ public abstract class TermWithMultipleOperands implements TermInt {
 				value = operation.executeWith(value, operand.getValue());
 			} else {
 				operand.simplifyOneStep();
+				if (operand.isNumber()) {
+					operand = new Number(operand.getValue());
+				}
 				newOperands.add(operand);
 			}
 		}
 		newOperands.add(0, new Number(value));
 		operands = newOperands;
-		if (operandsOnlyContainsSingleNumber()) {
+		if (isNumber()) {
 			return new Number(this.getValue());
 		} else {
 			return this;
 		}
 	}
 
-	private boolean operandsOnlyContainsSingleNumber() {
+	@Override
+	public Boolean isNumber() {
 		return operands.size() == 1 && isNumber(operands.get(0));
 	}
 
@@ -151,4 +158,24 @@ public abstract class TermWithMultipleOperands implements TermInt {
 
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((operands == null) ? 0 : operands.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (obj instanceof TermInt) {
+
+			TermInt other = (TermInt) obj;
+
+			return other.getString().equals(getString());
+		}
+		return false;
+	}
 }

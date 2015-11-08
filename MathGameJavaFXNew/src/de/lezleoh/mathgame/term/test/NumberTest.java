@@ -3,6 +3,7 @@ package de.lezleoh.mathgame.term.test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.junit.Test;
 import de.lezleoh.mathgame.term.Number;
@@ -12,7 +13,7 @@ public class NumberTest {
 	@Test
 	public final void testGetHitPositions() {
 		Number number = new Number(new Integer(0));
-		ArrayList<Integer> hitPositions = number.getHitPositions();
+		Set<Integer> hitPositions = number.getPossibleHitPositions();
 		assertTrue(hitPositions.isEmpty());
 	}
 

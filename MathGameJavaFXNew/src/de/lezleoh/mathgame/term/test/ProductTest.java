@@ -7,6 +7,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -21,7 +23,7 @@ public class ProductTest {
 
 	/**
 	 * Test method for
-	 * {@link de.lezleoh.mathgame.term.Product#getHitPositions()}.
+	 * {@link de.lezleoh.mathgame.term.Product#getPossibleHitPositions()}.
 	 */
 	@Test
 	public final void testGetHitPositionsMonad() {
@@ -30,13 +32,13 @@ public class ProductTest {
 		Number number = new Number(1);
 		Product product = new Product();
 		product.addOperand(number);
-		assertTrue(product.getHitPositions().isEmpty());
+		assertTrue(product.getPossibleHitPositions().isEmpty());
 
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.lezleoh.mathgame.term.Product#getHitPositions()}.
+	 * {@link de.lezleoh.mathgame.term.Product#getPossibleHitPositions()}.
 	 */
 	@Test
 	public final void testGetHitPositionsSimpleProduct() {
@@ -51,16 +53,16 @@ public class ProductTest {
 		product1.addOperand(factor12);
 		product1.addOperand(factor13);
 
-		ArrayList<Integer> hitPositionsExpected = new ArrayList<Integer>();
+		Set<Integer> hitPositionsExpected = new HashSet<Integer>();
 		hitPositionsExpected.add(new Integer(3));
 		hitPositionsExpected.add(new Integer(8));
 
-		assertEquals(hitPositionsExpected, product1.getHitPositions());
+		assertEquals(hitPositionsExpected, product1.getPossibleHitPositions());
 	}
 
 	/**
 	 * Test method for
-	 * {@link de.lezleoh.mathgame.term.Product#getHitPositions()}.
+	 * {@link de.lezleoh.mathgame.term.Product#getPossibleHitPositions()}.
 	 */
 	@Test
 	public final void testGetHitPositionsStructuredProduct() {
@@ -81,13 +83,13 @@ public class ProductTest {
 		product2.addOperand(factor21);
 		product2.addOperand(factor22);
 
-		ArrayList<Integer> hitPositionsExpected = new ArrayList<Integer>();
+		Set<Integer> hitPositionsExpected = new HashSet<Integer>();
 
 		hitPositionsExpected.add(new Integer(3));
 		hitPositionsExpected.add(new Integer(8));
 		hitPositionsExpected.add(new Integer(13));
 		hitPositionsExpected.add(new Integer(18));
-		assertEquals(hitPositionsExpected, product1.getHitPositions());
+		assertEquals(hitPositionsExpected, product1.getPossibleHitPositions());
 
 	}
 
