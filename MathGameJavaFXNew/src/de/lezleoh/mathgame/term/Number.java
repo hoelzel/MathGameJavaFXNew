@@ -19,6 +19,12 @@ public class Number implements TermInt {
 	public Set<Integer> getPossibleHitPositions() {
 		return new HashSet<Integer>();
 	}
+	
+	@Override
+	public Set<Integer> getPossibleHitPositionsBasic() {
+		return getPossibleHitPositions();
+	}
+	
 
 	@Override
 	public Integer getValue() {

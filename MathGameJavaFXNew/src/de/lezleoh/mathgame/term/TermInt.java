@@ -4,6 +4,7 @@ import java.util.Set;
 
 public interface TermInt {
 	Set<Integer> getPossibleHitPositions();
+	Set<Integer> getPossibleHitPositionsBasic();
 	Integer getValue();
 	Integer getLength();
 	String getString();

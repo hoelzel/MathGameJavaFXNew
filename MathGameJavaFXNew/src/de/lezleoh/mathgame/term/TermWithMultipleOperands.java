@@ -58,6 +58,12 @@ public abstract class TermWithMultipleOperands implements TermInt {
 		return hitPositions;
 
 	}
+	@Override
+	public Set<Integer> getPossibleHitPositionsBasic() {
+		
+		return getPossibleHitPositions();
+
+	}
 
 	private ArrayList<Integer> shiftToAbsoluteHitPositions(Integer shift, ArrayList<Integer> relativeHitPositions) {
 		ArrayList<Integer> absoluteHitPositions = new ArrayList<Integer>();
@@ -123,6 +129,30 @@ public abstract class TermWithMultipleOperands implements TermInt {
 
 		for (TermInt operand : operands) {
 			if (isNumber(operand) || this.hasEqualOperatorLevel(operand)) {
+				value = operation.executeWith(value, operand.getValue());
+			} else {
+				operand.simplifyOneStep();
+				if (operand.isNumber()) {
+					operand = new Number(operand.getValue());
+				}
+				newOperands.add(operand);
+			}
+		}
+		newOperands.add(0, new Number(value));
+		operands = newOperands;
+		if (isNumber()) {
+			return new Number(this.getValue());
+		} else {
+			return this;
+		}
+	}
+	
+	public TermInt simplifyOneStepBasic() {
+		Integer value = neutralElement;
+		ArrayList<TermInt> newOperands = new ArrayList<TermInt>();
+
+		for (TermInt operand : operands) {
+			if (isNumber(operand)) {
 				value = operation.executeWith(value, operand.getValue());
 			} else {
 				operand.simplifyOneStep();
