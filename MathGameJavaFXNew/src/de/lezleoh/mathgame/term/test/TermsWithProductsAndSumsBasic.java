@@ -8,6 +8,8 @@ import java.util.Set;
 import org.junit.Test;
 
 import de.lezleoh.mathgame.term.Number;
+import de.lezleoh.mathgame.term.SolveBasic;
+import de.lezleoh.mathgame.term.SolvingStrategy;
 import de.lezleoh.mathgame.term.Sum;
 import de.lezleoh.mathgame.term.TermInt;
 
@@ -52,8 +54,14 @@ public class TermsWithProductsAndSumsBasic {
 		Number summand13 = new Number(13);
 		Number summand21 = new Number(21);
 		Number summand22 = new Number(22);
+		SolvingStrategy solveBassicStrategy = new SolveBasic();
+
 		Sum sum1 = new Sum();
+		sum1.setSolvingStrategy(solveBassicStrategy);
+
 		Sum sum2 = new Sum();
+		sum2.setSolvingStrategy(solveBassicStrategy);
+
 		sum1.addOperand(summand11);
 		sum1.addOperand(summand12);
 		sum1.addOperand(sum2);
@@ -66,9 +74,9 @@ public class TermsWithProductsAndSumsBasic {
 		Sum sumExpected = new Sum();
 		sumExpected.addOperand(summand1Expected);
 		sumExpected.addOperand(summand2Expected);
-		TermInt sumActual = sum1.simplifyOneStepBasic();
-		//System.out.println(sumActual.getString());
-		
+		TermInt sumActual = sum1.simplifyOneStep();
+		// System.out.println(sumActual.getString());
+
 		assertEquals(sumExpected, sumActual);
 	}
 
